@@ -48,9 +48,24 @@ Ak chcete používať integrovanú konzolu VSCode na spúšťanie ROS2 príkazov
     "args": [
         "/d",
         "/k", 
-        "C:\\ros2\\ros2console"] // Toto je môj sourcovací skript, môžete namiesto tohto použiť priamo príkaz "source ros2...." 
+        "C:\\ros2\\ros2console"] // Toto je môj sourcovací skript ktorý nájdete v tomto repozitári aj s jeho dependanciami. 
+        // VYSOKO ODPORÚČAM POUŽIŤ MOJ SKRIPT a netinkerovať podľa seba je to dosť bádania a iné riešenia nemám overené.
+        // Namiesto môjho skriptu môžete použiť kombináciu príkazov
+        //     call "%ProgramFiles(x86)%\Microsoft Visual Studio\%VSVersion%\Community\VC\Auxiliary\Build\vcvars64.bat" 
+        //         Kde je potrebné zmeniť %VSVersion% za vašu verziu VS
+        //     call c:\opt\ros\foxy\x64\setup.bat
+        //     call c:\opt\install\setup.bat
 }
 ```
+Ak **settings.json** nenájdete na vyššie uvedenom umiestnení postupujte takto, vo VSCode otvorte nastavenia **(Ctrl+,)** a vyhľadajte **terminal.integrated.profiles.windows**. Potom kliknite na **Edit in settings.json**.
+```
+terminal.integrated.profiles.windows
+```
+![find_settings_json](find_settings_json.png)
+
+Teraz by ste mali byť schopní spustiť sourcnutý ros2 command line v integrovanom termináli VSCode
+
+![image](https://github.com/Marek-Sykorka-115025/ROS2-VSC-Tutorial/assets/92861405/234aec89-a9ba-41cf-bede-46787f94ab73)
 
 ## [Colcon Build vo VSCode](https://picknik.ai/vscode/docker/ros2/2024/01/23/ROS2-and-VSCode.html)
 
