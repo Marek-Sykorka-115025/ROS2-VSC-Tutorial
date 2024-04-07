@@ -101,6 +101,105 @@ Do políčka tasks je možné pridávať rôzne task-y, nie len na buildovanie, 
 ```
 Custom Task-y je možné spúšťať cez **Terminal -> Run Task -> "Task Name"**.
 
+Dôležité je tiež pravidelne meniť a dopĺňať svoje CMakeList.txt a package.xml. Tu je ukážka ako vyzerá môj CMake a package.xml:
+
+### CMake file
+
+```cmake
+cmake_minimum_required(VERSION 3.5)
+project(zad3)
+
+#####################################################
+## C++ Uga Buga Cave Man Brain ## Default to C++14 ##
+#####################################################
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+###############################################
+## Ament package manager - Find all PACKAGES ##
+###############################################
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+##############################
+## Define all INCLUDE PATHS ##
+##############################
+include_directories(
+    include
+    include/zad3
+    include/zad3/teleop
+    include/zad3/lidar
+)
+
+###############################
+## Declare a C++ EXECUTABLES ##
+###############################
+add_executable(teleop_cli_node
+    src/teleop/teleop_node.cpp
+    src/teleop/teleop_cli.cpp
+)
+add_executable(lidar_node
+    src/lidar/lidar_node.cpp
+    src/lidar/lidar.cpp
+)
+
+######################################################################
+## Specify libraries to link a library or executable target against ##
+######################################################################
+ament_target_dependencies(teleop_cli_node
+    rclcpp
+    geometry_msgs
+)
+ament_target_dependencies(lidar_node
+    rclcpp
+    sensor_msgs
+)
+
+#############
+## Install ##
+#############
+install(TARGETS
+    teleop_cli_node
+    lidar_node
+    DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
+```
+### Package.xml file
+
+```xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>zad3</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="marcopolo1234565@gmail.com">MarekS</maintainer>
+  <license>TODO: License declaration</license>
+
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
+```
+
 ## [Programovanie C++ ROS2 v VSCode (aneb InteliSense)](https://picknik.ai/vscode/docker/ros2/2024/01/23/ROS2-and-VSCode.html)
 
 Keď otvoríte ROS2 projekt vo VSCode v priečinku **.vscode** by mali tiež vzniknúť súbory **c_cpp_properties.json** a **settings.json**. Slúžia hlavne na konfiguráciu dopĺňania a zvýrazňovania kódu, mali by vyzerať nasledovne (špecificky podľa zariadenia a workspacu):
@@ -196,4 +295,25 @@ Zároveň spustí kód aj debugger, konfigurácia pre **launch.json** vyzerá na
     "target": "C:\\ros2\\udsZad3_ws\\src\\zad3\\launch\\zad3_launch.py" // Alebo jedna Node.exe
 }
 ```
-Návod ako vytvárať launch.py sa nachádza tu: https://docs.ros.org/en/foxy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html
+Návod ako vytvárať launch.py sa nachádza tu: https://docs.ros.org/en/foxy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html Ukážka môjho Launch File je tu:
+```python
+// contents of file zad3_launch.py
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='zad3',
+            namespace='zad3',
+            executable='teleop_cli_node',
+            name='teleop_cli_node'
+        ),
+        Node(
+            package='zad3',
+            namespace='zad3',
+            executable='lidar_node',
+            name='lidar_node'
+        ),
+    ])
+```
